@@ -1,0 +1,2 @@
+class NoAppropriateShapeException(Exception):
+    pass
