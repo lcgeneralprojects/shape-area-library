@@ -1,27 +1,48 @@
+import math
+from functools import reduce
 from errors import NoAppropriateShapeException
 
 
 class Shape:
     def __new__(cls, *args, **kwargs):
-        if cls is Shape:
-            for shape_class in AreaCalculator.shapes:
-                if shape_class.criterion(*args):
-                    return shape_class(*args)
-            raise NoAppropriateShapeException('No appropriate shape found')
+        # if cls is Shape:
+        #     for shape_class in AreaCalculator.shapes:
+        #         if shape_class.criterion(*args):
+        #             return shape_class(*args)
+        #     raise NoAppropriateShapeException('No appropriate shape found')
+        raise NotImplementedError('This class is not meant to be instantiated')
 
-    def criterion(self, *args):
-        pass
+    @classmethod
+    def criterion(cls, *args):
+        raise NotImplementedError('This class has no criterion method')
 
-    def area(self):
-        pass
+    @classmethod
+    def area(cls, *args):
+        raise NotImplementedError('This class has no area calculation method')
 
 
 class Triangle(Shape):
-    pass
+    @classmethod
+    def criterion(cls, *args):
+        return len(args) == 3
+
+    @classmethod
+    def area(cls, *args):
+        perimeter = sum(args)/2
+        area = math.sqrt(reduce(lambda x, y: x*(perimeter-y), [0, *args]))
+        return area
 
 
 class Circle(Shape):
-    pass
+    @classmethod
+    def criterion(cls, *args):
+        return len(args) == 1
+
+    @classmethod
+    def area(cls, *args):
+        radius = args[0]
+        area = math.pi * (radius ** 2)
+        return area
 
 
 class AreaCalculator:
@@ -30,6 +51,10 @@ class AreaCalculator:
     def __new__(cls, *args, **kwargs):
         raise NotImplementedError('This class is not meant to be instantiated')
 
-    def calculate_area(*args):
-        area = Shape(*args).area()
-        return area
+    @classmethod
+    def calculate_area(cls, *args):
+        for shape in cls.shapes:
+            if shape.criterion(*args):
+                area = shape.area(*args)
+                return area
+        raise NoAppropriateShapeException('No matching supported shape found')
