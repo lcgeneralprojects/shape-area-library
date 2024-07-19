@@ -5,11 +5,6 @@ from errors import NoAppropriateShapeException
 
 class Shape:
     def __new__(cls, *args, **kwargs):
-        # if cls is Shape:
-        #     for shape_class in AreaCalculator.shapes:
-        #         if shape_class.criterion(*args):
-        #             return shape_class(*args)
-        #     raise NoAppropriateShapeException('No appropriate shape found')
         raise NotImplementedError('This class is not meant to be instantiated')
 
     @classmethod
@@ -58,3 +53,7 @@ class AreaCalculator:
                 area = shape.area(*args)
                 return area
         raise NoAppropriateShapeException('No matching supported shape found')
+
+    @classmethod
+    def add_shapes(cls, *args):
+        cls.shapes+list(args)
