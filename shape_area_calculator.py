@@ -28,7 +28,7 @@ class AreaCalculator:
     def add_shapes(cls, shapes):
         for shape_candidate in shapes:
             try:
-                shape_candidate.criterion([0])
+                shape_candidate.criterion()
             except AttributeError:
                 print(f'{shape_candidate} is not a shape')
                 continue
@@ -39,6 +39,8 @@ class AreaCalculator:
 
 
 class Shape:
+    target_calculator = AreaCalculator
+
     def __new__(cls, sides):
         if cls.criterion(sides):
             return super().__new__(cls)
@@ -51,7 +53,7 @@ class Shape:
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        AreaCalculator.add_shapes([cls])
+        cls.target_calculator.add_shapes([cls])
 
     @staticmethod
     def criterion(*args):
@@ -62,15 +64,18 @@ class Shape:
 
 
 class Triangle(Shape):
+    def __init__(self, sides):
+        super().__init__(sides=sides)
+        self.sides.sort()
+
     @staticmethod
     def criterion(sides=None):
         if sides is None:
             return False
+        tmp = sorted(sides)
         return (len(sides) == 3 and
                 all(side > 0 for side in sides) and
-                sides[0] < sides[1]+sides[2] and
-                sides[1] < sides[0]+sides[2] and
-                sides[2] < sides[0]+sides[1])
+                tmp[0]+tmp[1] > tmp[2])
 
     def area(self):
         half_perimeter = sum(self.sides) / 2
@@ -78,8 +83,7 @@ class Triangle(Shape):
         return area
 
     def check_if_rectangular(self):
-        tmp = sorted(self.sides)
-        return tmp[0] ** 2 + tmp[1] ** 2 == tmp[2] ** 2
+        return self.sides[0] ** 2 + self.sides[1] ** 2 == self.sides[2] ** 2
 
 
 class Circle(Shape):
@@ -87,7 +91,7 @@ class Circle(Shape):
         self.radius = radius[0]
 
     @staticmethod
-    def criterion(radius):
+    def criterion(radius=None):
         if radius is None:
             return False
         return len(radius) == 1 and radius[0] > 0
