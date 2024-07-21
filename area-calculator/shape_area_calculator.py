@@ -18,8 +18,10 @@ class AreaCalculator:
                     return area
             except AttributeError:
                 print(f'{shape} is not a shape')
+                return
             except NotImplementedError:
                 print(f'{shape} does not have an implemented criterion method')
+                return
         for shape in cls.shapes:
             if shape.criterion(sides):
                 area = shape(sides).area()
