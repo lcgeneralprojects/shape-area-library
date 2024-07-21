@@ -13,11 +13,15 @@ class AreaCalculator:
     def calculate_area(cls, sides, shape=None):
         if shape is not None:
             try:
-                shape.criterion(sides)
+                if shape.criterion(sides):
+                    area = shape(sides).area()
+                    return area
             except AttributeError:
                 print(f'{shape} is not a shape')
+                return
             except NotImplementedError:
                 print(f'{shape} does not have an implemented criterion method')
+                return
         for shape in cls.shapes:
             if shape.criterion(sides):
                 area = shape(sides).area()
@@ -25,8 +29,8 @@ class AreaCalculator:
         raise NoAppropriateShapeException('No matching supported shape found')
 
     @classmethod
-    def add_shapes(cls, shapes):
-        for shape_candidate in shapes:
+    def add_shapes(cls, shapes_to_add):
+        for shape_candidate in shapes_to_add:
             try:
                 shape_candidate.criterion()
             except AttributeError:
@@ -36,6 +40,14 @@ class AreaCalculator:
                 print(f'{shape_candidate} does not have an implemented criterion method')
                 continue
             cls.shapes.add(shape_candidate)
+
+    @classmethod
+    def remove_shapes(cls, shapes_to_delete=None):
+        if shapes_to_delete is None:
+            cls.shapes.clear()
+        else:
+            for shape in shapes_to_delete:
+                cls.shapes.remove(shape)
 
 
 class Shape:
@@ -52,8 +64,8 @@ class Shape:
         self.sides = sides
 
     def __init_subclass__(cls, **kwargs):
-        super().__init_subclass__(**kwargs)
-        cls.target_calculator.add_shapes([cls])
+        if cls.target_calculator is not None:
+            cls.target_calculator.add_shapes([cls])
 
     @staticmethod
     def criterion(*args):
