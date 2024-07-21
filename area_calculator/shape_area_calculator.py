@@ -1,6 +1,6 @@
 import math
 from functools import reduce
-from errors import NoAppropriateShapeException, NotShapeException
+from .errors import NoAppropriateShapeException, NotShapeException
 
 
 class AreaCalculator:

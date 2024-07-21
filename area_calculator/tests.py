@@ -1,6 +1,6 @@
 import math
 import unittest
-from shape_area_calculator import Shape, Triangle, Circle, AreaCalculator
+from .shape_area_calculator import Shape, Triangle, Circle, AreaCalculator
 
 
 class MyTestCase(unittest.TestCase):
